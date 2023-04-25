@@ -1,0 +1,247 @@
+---
+title: "PlacementBigdata"
+author: "Sruthi Chintalapati, Honeysri Katragadda, Srikanth Thota"
+date: "2022-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+###### Importing necessary libraries:-
+library(dplyr)
+library(ggplot2)
+
+```
+```{r}
+pl <- read.csv(file.choose())  # Open CSv File  
+```
+
+
+
+
+
+```{r}
+#####Glance Of dataSet
+head(pl)
+```
+```{r}
+####About Data Set:
+##A University Announced Its On-Campus Placement Records For The Mba Course. The Data Is From The Years 2013 And 2014.The Following Is The College Placements Data Compiled Over 2 years. 
+
+##This Dataset Consists of 15 columns which include gender,ssc percentage,hsc percentage,ssc board,hsc board,work experiance,degree percentage ,degree technology,test percentage,specilization,mba percentage,status,salary
+
+```
+
+```{r}
+####check for missing values:
+sapply(pl, function (x){sum(is.na(x))})
+```
+
+
+```{r}
+##we Can Observe there are missing values in salary column
+##Handling missing data:
+pl[complete.cases(pl), ]
+pl[!complete.cases(pl), ]
+
+pl<-pl[complete.cases(pl), ]
+print(pl)
+sapply(pl, function (x){sum(is.na(x))})
+
+## Dropping null values
+
+```
+```{r drop null}
+clean.pl <- na.omit(pl)
+
+```
+
+```{r}
+
+### We Can Observe There Are No Missing Values
+### Discriptive Analysis:
+summary(pl)
+#Here we can look at the descriptive statistics for all the numerical variables minimum, maximum, 1st quartile, 3rd quartile, mean, median, and for categorical variable we look at the frequency count of it.
+
+
+```
+```{r}
+
+### structure of dataset
+
+str(pl)
+```
+
+```{r}
+
+
+#Here we can see variables datatype where some of them identified as character and some are integers,num respectively.
+glimpse(pl)
+
+
+```
+
+
+```{r}
+
+
+boxplot(pl$salary)
+summary(pl$salary)
+x <- 300000  +(300000  -240000 )*1.5
+pl$salary[pl$salary>x] = x
+
+
+boxplot(pl$etest_p)
+summary(pl$etest_p)
+x <- 85+(85-50 )*1.5
+pl$etest_p[pl$etest_p>x] = x
+
+boxplot(pl$mba_p)
+summary(pl$mba_p)
+x <- 66.76+(66.76-57.77 )*1.5
+pl$mba_p[pl$mba_p>x] = x
+
+boxplot(pl$hsc_p)
+summary(pl$hsc_p)
+x<-75.25+(75.25-63)*1.5
+pl$hsc_p[pl$hsc_p>x] = x
+
+
+boxplot(pl$ssc_p)
+summary(pl$ssc_p)
+x<-78.25+(78.25-65)*1.5
+pl$ssc_p[pl$ssc_p>x] = x
+
+
+boxplot(pl$degree_p)
+summary(pl$degree_p)
+x<-72+(72-65)*1.5
+pl$degree_p[pl$degree_p>x] = x
+
+
+
+```
+
+```{r}
+
+
+#The points that are higher or lower than the whiskers of the boxplot are called outliers. Since none of the variables have points that are higher or lower than the whiskers of the boxplot, outlier treatment is not necessary in this instance.
+#There are many ways to deal with outliers or extreme values, but the one we'll use here is whinsorization, in which the points above the whiskers are replaced with the maximum value of the boxplot and the points below the whiskers with the minimum value.The outlier treatment will be carried out in this manner.
+
+hist(pl$ssc_p)
+
+```
+```{r}
+
+
+#The histogram above demonstrates that the majority of students scored between 60 and 70 percent in ssc public examination, while only a very small number scored 90 percent or higher.
+
+hist(pl$hsc_p)
+
+```
+```{r}
+
+
+#The histogram above shows that most of understudies scored somewhere in the range of 60 and 65 percent in secondary school assessment, while just a tiny number scored 90% or higher.
+hist(pl$degree_p)
+
+```
+```{r}
+
+
+##The histogram that can be seen above demonstrates that the majority of understudies achieved undergraduate scores between 65 and 70%, with just a small number attaining grades of 80% or higher.
+hist(pl$etest_p)
+
+```
+```{r}
+
+
+#The Scores of Students Who Have Taken an Exam to Evaluate Their Potential in a Standard Role  are Shown in the Histogram Above. The majority of students received scores between 55 and 60, while only a small number received scores between 95 and 100.
+hist(pl$mba_p)
+
+```
+```{r}
+
+#The above histogram shows the mba students' scores, which show that most got scores between 60 and 65, and no one got more than 80 percent in post-graduation.
+hist(pl$salary)
+
+```
+```{r}
+
+#The graph above shows how often students get paid after they get hired. We can see that the majority of students got paid between rs200,000 and rs300,000 per year, with about 15 students getting paid more than $400,000 per year.
+library(plotly)
+plot_ly(data=pl,x=pl$gender,type="histogram")
+
+```
+```{r}
+
+#The Above Graph Shows that majority of students who got placed are males when compared to females
+plot_ly(data=pl,x=pl$specialisation,type="histogram")
+
+```
+```{r}
+
+#The graph above shows that the majority of students have completed their postgraduate studies in market and finance, which is double the number of students who have completed mkt and HR.
+library(ggplot2)
+ggplot(data=pl,aes(x=workex))+geom_bar()
+
+```
+```{r}
+
+#As evidenced by the bar graph above, the majority of students have no experience.
+ggplot(data=pl,aes(x=hsc_b,fill=degree_t))+geom_bar()
+
+
+```
+```{r}
+
+# In India There are two types of board which students can choose to study(central and state board which is specified as others in the data set )in which it is  displayed that in both of the boards have students with commerce and managment stream  background
+
+#Scatter Plot;
+data<-pl[,c("salary","sl_no")]
+d<-head(data)
+plot(x=d$salary,y=d$sl_no,xlab="Salary Of Candidate",ylab="candidate no",main="candidate salary")
+
+
+```
+```{r}
+
+#The Above Scatter Plot Is Drawn Between salary of candidate and candidate number
+
+ggplot(pl, aes(x = "", y =salary, fill = gender)) +
+geom_bar(stat = "identity", color = "white") +
+coord_polar("y", start = 0)+
+theme_void()
+```
+
+
+
+```{r}
+#From The Above Diagram We Can Cunclude That Majority Of Men Have Got The Jobs And Getting The Salaries
+
+
+p <- ggplot(data=pl)
+a <-  geom_point(aes(x=sl_no, y = ssc_p, color="Score" ),alpha=0.3)
+b <- geom_point(aes(x=sl_no, y = hsc_p, color="Score"),alpha=0.3)
+c <-  geom_point(aes(x=sl_no, y = etest_p, color="Score"),alpha=0.3)
+d <-  geom_point(aes(x=sl_no, y = mba_p, color="Score"),alpha=0.3)
+p +  a+b+c+d  + ylab("Score")
+
+```
+
+```{r}
+#From The Above Graph   Shows That Many StudentsWho's s.no are  from 100 and 150 got   more than 90 score in total
+a <-  geom_smooth(aes(x=sl_no, y = ssc_p, color="Score" ),alpha=0.3)
+b <- geom_smooth(aes(x=sl_no, y = hsc_p, color="Score"),alpha=0.3)
+c <-  geom_smooth(aes(x=sl_no, y = etest_p, color="Score"),alpha=0.3)
+d <-  geom_smooth(aes(x=sl_no, y = mba_p, color="Score"),alpha=0.3)
+p +  a+b+c+d  + ylab("Score")
+
+
+```
+
